@@ -18,6 +18,27 @@
       <Platform>x64</Platform>
     </ProjectConfiguration>
   </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Bullet.cpp" />
+    <ClCompile Include="Engine\DrawFunctions.cpp" />
+    <ClCompile Include="Engine\Game2D.cpp" />
+    <ClCompile Include="Engine\Timer.cpp" />
+    <ClCompile Include="main.cpp" />
+    <ClCompile Include="Tank.cpp" />
+    <ClCompile Include="TankBattle.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Bullet.h" />
+    <ClInclude Include="Engine\Colors.h" />
+    <ClInclude Include="Engine\DrawFunctions.h" />
+    <ClInclude Include="Engine\Game2D.h" />
+    <ClInclude Include="Engine\RGB.h" />
+    <ClInclude Include="Engine\Timer.h" />
+    <ClInclude Include="Engine\Vector2.h" />
+    <ClInclude Include="Engine\Vector3.h" />
+    <ClInclude Include="Tank.h" />
+    <ClInclude Include="TankBattle.h" />
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>17.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>
@@ -126,27 +147,6 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
   </ItemDefinitionGroup>
-  <ItemGroup>
-    <ClCompile Include="Bullet.cpp" />
-    <ClCompile Include="DrawFunctions.cpp" />
-    <ClCompile Include="Game2D.cpp" />
-    <ClCompile Include="main.cpp" />
-    <ClCompile Include="Tank.cpp" />
-    <ClCompile Include="TankBattle.cpp" />
-    <ClCompile Include="Timer.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="Bullet.h" />
-    <ClInclude Include="Colors.h" />
-    <ClInclude Include="DrawFunctions.h" />
-    <ClInclude Include="Game2D.h" />
-    <ClInclude Include="Tank.h" />
-    <ClInclude Include="RGB.h" />
-    <ClInclude Include="TankBattle.h" />
-    <ClInclude Include="Timer.h" />
-    <ClInclude Include="Vector2.h" />
-    <ClInclude Include="Vector3.h" />
-  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

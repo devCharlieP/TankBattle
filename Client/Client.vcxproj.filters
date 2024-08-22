@@ -14,65 +14,62 @@
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
     <Filter Include="소스 파일\Engine">
-      <UniqueIdentifier>{8dfa83df-cf4f-49a0-a2a2-00b45bf4bf69}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="소스 파일\Source">
-      <UniqueIdentifier>{9e8b4b83-211e-4c3b-a309-dfe6c1c3708e}</UniqueIdentifier>
+      <UniqueIdentifier>{8dc1e856-7b64-46aa-899f-b9d2bafce82f}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
-      <Filter>소스 파일\Source</Filter>
-    </ClCompile>
-    <ClCompile Include="Game2D.cpp">
-      <Filter>소스 파일\Engine</Filter>
-    </ClCompile>
-    <ClCompile Include="Timer.cpp">
-      <Filter>소스 파일\Engine</Filter>
-    </ClCompile>
-    <ClCompile Include="DrawFunctions.cpp">
-      <Filter>소스 파일\Engine</Filter>
-    </ClCompile>
-    <ClCompile Include="Tank.cpp">
-      <Filter>소스 파일\Source</Filter>
-    </ClCompile>
-    <ClCompile Include="Bullet.cpp">
-      <Filter>소스 파일\Source</Filter>
+      <Filter>소스 파일</Filter>
     </ClCompile>
     <ClCompile Include="TankBattle.cpp">
-      <Filter>소스 파일\Source</Filter>
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\DrawFunctions.cpp">
+      <Filter>소스 파일\Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\Game2D.cpp">
+      <Filter>소스 파일\Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\Timer.cpp">
+      <Filter>소스 파일\Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="Bullet.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="Tank.cpp">
+      <Filter>소스 파일</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="RGB.h">
+    <ClInclude Include="TankBattle.h">
+      <Filter>소스 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Colors.h">
       <Filter>소스 파일\Engine</Filter>
     </ClInclude>
-    <ClInclude Include="Vector2.h">
+    <ClInclude Include="Engine\DrawFunctions.h">
       <Filter>소스 파일\Engine</Filter>
     </ClInclude>
-    <ClInclude Include="Colors.h">
+    <ClInclude Include="Engine\Game2D.h">
       <Filter>소스 파일\Engine</Filter>
     </ClInclude>
-    <ClInclude Include="Game2D.h">
+    <ClInclude Include="Engine\RGB.h">
       <Filter>소스 파일\Engine</Filter>
     </ClInclude>
-    <ClInclude Include="Timer.h">
+    <ClInclude Include="Engine\Timer.h">
       <Filter>소스 파일\Engine</Filter>
     </ClInclude>
-    <ClInclude Include="DrawFunctions.h">
+    <ClInclude Include="Engine\Vector2.h">
       <Filter>소스 파일\Engine</Filter>
     </ClInclude>
-    <ClInclude Include="Vector3.h">
+    <ClInclude Include="Engine\Vector3.h">
       <Filter>소스 파일\Engine</Filter>
-    </ClInclude>
-    <ClInclude Include="Tank.h">
-      <Filter>소스 파일\Source</Filter>
     </ClInclude>
     <ClInclude Include="Bullet.h">
-      <Filter>소스 파일\Source</Filter>
+      <Filter>소스 파일</Filter>
     </ClInclude>
-    <ClInclude Include="TankBattle.h">
-      <Filter>소스 파일\Source</Filter>
+    <ClInclude Include="Tank.h">
+      <Filter>소스 파일</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
