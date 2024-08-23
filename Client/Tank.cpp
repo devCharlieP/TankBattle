@@ -16,20 +16,32 @@ void Tank::draw()
 
 void Tank::moveLeft(const float& dt)
 {
-	center.x -= 0.5f * dt;
+	if (center.x > -1.7f)
+	{
+		center.x -= 0.5f * dt;
+	}
 }
 
 void Tank::moveRight(const float& dt)
 {
-	center.x += 0.5f * dt;
+	if (center.x < 1.7f)
+	{
+		center.x += 0.5f * dt;
+	}
 }
 
 void Tank::moveUp(const float& dt)
 {
-	center.y += 0.5f * dt;
+	if (center.y < 0.9f)
+	{
+		center.y += 0.5f * dt;
+	}
 }
 
 void Tank::moveDown(const float& dt)
 {
-	center.y -= 0.5f * dt;
+	if (center.y > -1.0f)
+	{
+		center.y -= 0.5f * dt;
+	}
 }

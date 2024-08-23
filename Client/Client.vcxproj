@@ -26,6 +26,7 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Tank.cpp" />
     <ClCompile Include="TankBattle.cpp" />
+    <ClCompile Include="Transfer.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Bullet.h" />
@@ -38,6 +39,8 @@
     <ClInclude Include="Engine\Vector3.h" />
     <ClInclude Include="Tank.h" />
     <ClInclude Include="TankBattle.h" />
+    <ClInclude Include="Transfer.h" />
+    <ClInclude Include="Wall.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>17.0</VCProjectVersion>

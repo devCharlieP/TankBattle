@@ -2,12 +2,12 @@
 
 Bullet::Bullet()
 {
-	//SoundEngine_Singleton::getInstance()->playSound("missile");
+	
 }
 
 Bullet::~Bullet()
 {
-	//SoundEngine_Singleton::getInstance()->stopSound("missile");
+	
 }
 
 void Bullet::draw()
@@ -21,5 +21,5 @@ void Bullet::draw()
 
 void Bullet::update(const float& dt)
 {
-	center += velocity * dt * 0.5;
+	center += velocity * dt * 0.5f;
 }
