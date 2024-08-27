@@ -1,157 +1,156 @@
 #include "TankBattle.h"
+#include <iostream>
 
-TankBattle::TankBattle() : Game2D("This is my digital canvas!", 1920, 1080, true, 2), socket_(io_context_)
+TankBattle::TankBattle()
+    : Game2D("This is my digital canvas!", 1920, 1080, true, 2),
+    transfer(io_context, "127.0.0.1", "12345"), status(false), is1p(true)
 {
-	try {
-		boost::asio::ip::tcp::resolver resolver(io_context_);
-		boost::asio::ip::tcp::resolver::results_type endpoints = resolver.resolve("127.0.0.1", "12345");
-		boost::asio::connect(socket_, endpoints);
+    // 서버와의 연결을 설정
+    std::thread([this]() {
+        while (!status) 
+        {
+            transfer.receiveStatus(status, is1p); // 서버로부터 상태를 지속적으로 수신
 
-		transfer_ = new Transfer(socket_);
-		isPlayer1 = transfer_->receivePlayerInfo();
-	}
-	catch (std::exception& e) {
-		std::cerr << "Could not connect to server: " << e.what() << std::endl;
+            if (!status) 
+            {
+                std::this_thread::sleep_for(std::chrono::milliseconds(100)); // 상태가 true가 될 때까지 대기
+            }
 
-		transfer_ = nullptr;
-		isPlayer1 = true;
-	}
-
-	// 탱크의 초기 위치 설정
-	if (isPlayer1)
-	{
-		MyTank.center = vec2(-0.5f, 0.0f);
-	}
-	else 
-	{
-		MyTank.center = vec2(0.5f, 0.0f);
-	}
+            handle1p();
+        }
+        }).detach(); // 비동기적으로 상태 수신 스레드 실행
 }
 
 TankBattle::~TankBattle()
 {
-	if (transfer_) 
-	{
-		delete transfer_;
-	}
+    for (auto bullet : Mybullets) 
+    {
+        delete bullet;
+    }
+    Mybullets.clear();
 
-	for (auto bullet : Mybullets)
-	{
-		delete bullet;
-	}	
-
-	Mybullets.clear();
-
-	for (auto bullet : Enemybullets)
-	{
-		delete bullet;
-	}
-
-	Enemybullets.clear();
+    for (auto bullet : Enemybullets) 
+    {
+        delete bullet;
+    }
+    Enemybullets.clear();
 }
 
 void TankBattle::update()
 {
-	// move tank
-	bool is_moving = false;
+    if (!status)
+    {
+        return;
+    }
 
-	if (isKeyPressed(GLFW_KEY_LEFT)) 
-	{
-		MyTank.moveLeft(getTimeStep());
-		is_moving = true;
-	}
+    bool is_moving = false;
 
-	if (isKeyPressed(GLFW_KEY_RIGHT)) 
-	{
-		MyTank.moveRight(getTimeStep());
-		is_moving = true;
-	}
+    if (isKeyPressed(GLFW_KEY_LEFT)) 
+    {
+        MyTank.moveLeft(getTimeStep());
+        is_moving = true;
+    }
 
-	if (isKeyPressed(GLFW_KEY_UP)) 
-	{
-		MyTank.moveUp(getTimeStep());
-		is_moving = true;
-	}
+    if (isKeyPressed(GLFW_KEY_RIGHT)) 
+    {
+        MyTank.moveRight(getTimeStep());
+        is_moving = true;
+    }
 
-	if (isKeyPressed(GLFW_KEY_DOWN)) 
-	{
-		MyTank.moveDown(getTimeStep());
-		is_moving = true;
-	}
+    if (isKeyPressed(GLFW_KEY_UP)) 
+    {
+        MyTank.moveUp(getTimeStep());
+        is_moving = true;
+    }
 
-	// shoot a cannon ball
-	if (isKeyPressedAndReleased(GLFW_KEY_SPACE))
-	{
-		Bullet* NewBullet = new Bullet;
+    if (isKeyPressed(GLFW_KEY_DOWN)) 
+    {
+        MyTank.moveDown(getTimeStep());
+        is_moving = true;
+    }
 
-		NewBullet->center = MyTank.center;
-		NewBullet->center.x += 0.2f;
-		NewBullet->center.y += 0.1f;
+    if (isKeyPressedAndReleased(GLFW_KEY_SPACE)) 
+    {
+        Bullet* NewBullet = new Bullet;
+        NewBullet->center = MyTank.center;
 
-		if (isPlayer1)
-		{
-			NewBullet->velocity = vec2(2.0f, 0.0f);
-		}
-		else
-		{
-			NewBullet->velocity = vec2(-2.0f, 0.0f);
-		}
+        if (is1p)
+        {
+            NewBullet->center.x += 0.2f;
+            NewBullet->center.y += 0.1f;
+            NewBullet->velocity = vec2(2.0f, 0.0f);
+        }
+        else
+        {
+            NewBullet->center.x -= 0.2f;
+            NewBullet->center.y += 0.1f;
+            NewBullet->velocity = vec2(-2.0f, 0.0f);
+        }
 
-		Mybullets.push_back(NewBullet);
-	}
+        Mybullets.push_back(NewBullet);
+    }
 
-	for (auto bullet : Mybullets) {
-		bullet->update(getTimeStep());
-	}
+    for (auto bullet : Mybullets) 
+    {
+        bullet->update(getTimeStep());
+    }
 
-	// remove bullets that go out of the screen
-	Mybullets.erase(
-		std::remove_if(Mybullets.begin(), Mybullets.end(), [](Bullet* bullet) {
-			bool shouldDelete = bullet->center.x > 2.0f || bullet->center.x < -2.0f || bullet->center.y > 2.0f || bullet->center.y < -2.0f;
-			
-			if (shouldDelete) 
-			{
-				delete bullet;
-			}
+    Mybullets.erase(
+        std::remove_if(Mybullets.begin(), Mybullets.end(), [](Bullet* bullet) {
+            bool shouldDelete = bullet->center.x > 2.0f || bullet->center.x < -2.0f || bullet->center.y > 2.0f || bullet->center.y < -2.0f;
+            
+            if (shouldDelete) 
+            {
+                delete bullet;
+            }
 
-			return shouldDelete;
-			}),
+            return shouldDelete;
+            }),
 
-		Mybullets.end()
-	);
+        Mybullets.end()
+    );
 
-	render();
+    render();
 
-	if (transfer_) 
-	{
-		handleNetworkCommunication();
-	}
+    handletransfer();
 }
 
 void TankBattle::render()
 {
-	// rendering
-	Wall.draw();
+    Wall.draw();
 
-	MyTank.draw();
-	for (auto bullet : Mybullets)
-	{
-		bullet->draw();
-	}
+    MyTank.draw();
+    for (auto bullet : Mybullets) 
+    {
+        bullet->draw();
+    }
 
-	if (transfer_)
-	{
-		EnemyTank.draw();
-		for (auto bullet : Enemybullets)
-		{
-			bullet->draw();
-		}
-	}	
+    EnemyTank.draw();
+    for (auto bullet : Enemybullets) 
+    {
+        bullet->draw();
+    }
 }
 
-void TankBattle::handleNetworkCommunication()
+void TankBattle::handletransfer()
 {
-	transfer_->sendTankAndBullets(MyTank, Mybullets);
+    transfer.sendTankPosition(MyTank.center.x, MyTank.center.y);
+    
+    transfer.receiveTankPosition(EnemyTank.center.x, EnemyTank.center.y);
+}
 
-	transfer_->receiveEnemyTankAndBullets(EnemyTank, Enemybullets);
+void TankBattle::handle1p()
+{
+    if (is1p)
+    {
+        MyTank.center = vec2(-1.0f, 0.0f);
+        MyTank.direction = 1.0f;
+        EnemyTank.direction = -1.0f;
+    }
+    else
+    {
+        MyTank.center = vec2(1.0f, 0.0f);
+        MyTank.direction = -1.0f;
+        EnemyTank.direction = 1.0f;
+    }
 }

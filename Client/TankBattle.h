@@ -21,20 +21,18 @@ public:
 	std::vector<Bullet*> Mybullets;
 	std::vector<Bullet*> Enemybullets;
 
-	bool isPlayer1 = true;
+	boost::asio::io_context io_context;
+	Transfer transfer;
+
+	bool status;
+	bool is1p;
 
 	TankBattle();
-
 	~TankBattle();
 
 	void update() override;
-
 	void render();
 
-private:
-	boost::asio::io_context io_context_;
-	boost::asio::ip::tcp::socket socket_;
-	Transfer* transfer_;
-
-	void handleNetworkCommunication();
+	void handletransfer();
+	void handle1p();
 };

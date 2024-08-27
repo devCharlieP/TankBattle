@@ -6,7 +6,7 @@ class Tank
 {
 public:
 	vec2 center = vec2(0.0f, 0.0f);
-	//vec2 direction = vec2(1.0f, 0.0f, 0.0f);
+	float direction = 0.0f;
 
 	void draw();
 

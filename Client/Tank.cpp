@@ -6,9 +6,9 @@ void Tank::draw()
 	{
 		translate(center);
 		drawFilledBox(Colors::green, 0.25f, 0.1f); // body
-		translate(-0.02f, 0.1f);
+		translate(-0.02f * direction, 0.1f);
 		drawFilledBox(Colors::blue, 0.15f, 0.09f); // turret
-		translate(0.15f, 0.0f);
+		translate(0.15f * direction, 0.0f);
 		drawFilledBox(Colors::red, 0.15f, 0.03f);  // barrel
 	}
 	endTransformation();
@@ -16,18 +16,38 @@ void Tank::draw()
 
 void Tank::moveLeft(const float& dt)
 {
-	if (center.x > -1.7f)
+	if (direction == 1.0f)
 	{
-		center.x -= 0.5f * dt;
+		if (center.x > -1.7f)
+		{
+			center.x -= 0.5f * dt;
+		}
 	}
+	else
+	{
+		if (center.x > 0.0f)
+		{
+			center.x -= 0.5f * dt;
+		}
+	}	
 }
 
 void Tank::moveRight(const float& dt)
 {
-	if (center.x < 1.7f)
+	if (direction == 1.0f)
 	{
-		center.x += 0.5f * dt;
+		if (center.x < 0.0f)
+		{
+			center.x += 0.5f * dt;
+		}
 	}
+	else
+	{
+		if (center.x < 1.7f)
+		{
+			center.x += 0.5f * dt;
+		}
+	}	
 }
 
 void Tank::moveUp(const float& dt)

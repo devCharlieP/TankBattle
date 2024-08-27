@@ -1,50 +1,31 @@
 #include "Transfer.h"
-#include <thread>
+#include <iostream>
 
-Transfer::Transfer(boost::asio::ip::tcp::socket& socket)
-    : socket_(socket)
+Transfer::Transfer(boost::asio::io_context& io_context, const std::string& host, const std::string& port)
+    : socket_(io_context)
 {
-
+    boost::asio::ip::tcp::resolver resolver(io_context);
+    boost::asio::ip::tcp::resolver::results_type endpoints = resolver.resolve(host, port);
+    boost::asio::connect(socket_, endpoints);
 }
 
-bool Transfer::receivePlayerInfo()
+// 서버로 자신의 탱크 위치를 전송
+void Transfer::sendTankPosition(float tankx, float tanky)
 {
-    int playerNumber;
-    boost::asio::read(socket_, boost::asio::buffer(&playerNumber, sizeof(int)));
-
-    return playerNumber == 1;
+    boost::asio::write(socket_, boost::asio::buffer(&tankx, sizeof(float)));
+    boost::asio::write(socket_, boost::asio::buffer(&tanky, sizeof(float)));
 }
 
-void Transfer::sendTankAndBullets(const Tank& tank, const std::vector<Bullet*>& bullets)
+// 서버로부터 상대방의 탱크 위치를 수신
+void Transfer::receiveTankPosition(float& tankx, float& tanky)
 {
-    boost::asio::write(socket_, boost::asio::buffer(&tank.center, sizeof(vec2)));
-
-    int bulletCount = bullets.size();
-    boost::asio::write(socket_, boost::asio::buffer(&bulletCount, sizeof(int)));
-
-    for (auto bullet : bullets) 
-    {
-        boost::asio::write(socket_, boost::asio::buffer(&bullet->center, sizeof(vec2)));
-    }
+    boost::asio::read(socket_, boost::asio::buffer(&tankx, sizeof(float)));
+    boost::asio::read(socket_, boost::asio::buffer(&tanky, sizeof(float)));
 }
 
-void Transfer::receiveEnemyTankAndBullets(Tank& enemyTank, std::vector<Bullet*>& enemyBullets)
+// 서버로부터 연결 상태를 수신
+void Transfer::receiveStatus(bool& status, bool& is1p)
 {
-    boost::asio::read(socket_, boost::asio::buffer(&enemyTank.center, sizeof(vec2)));
-
-    int bulletCount;
-    boost::asio::read(socket_, boost::asio::buffer(&bulletCount, sizeof(int)));
-
-    for (auto bullet : enemyBullets) 
-    {
-        delete bullet;
-    }
-    enemyBullets.clear();
-
-    for (int i = 0; i < bulletCount; ++i) 
-    {
-        Bullet* newBullet = new Bullet;
-        boost::asio::read(socket_, boost::asio::buffer(&newBullet->center, sizeof(vec2)));
-        enemyBullets.push_back(newBullet);
-    }
+    boost::asio::read(socket_, boost::asio::buffer(&status, sizeof(bool)));
+    boost::asio::read(socket_, boost::asio::buffer(&is1p, sizeof(bool)));
 }

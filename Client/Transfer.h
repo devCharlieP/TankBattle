@@ -1,18 +1,19 @@
-#pragma once
-
-#include "TankBattle.h"
 #include <boost/asio.hpp>
 
-class Transfer {
+class Transfer
+{
 public:
-    Transfer(boost::asio::ip::tcp::socket& socket);
+    Transfer(boost::asio::io_context& io_context, const std::string& host, const std::string& port);
 
-    bool receivePlayerInfo();
+    // 서버로 자신의 탱크 위치를 전송
+    void sendTankPosition(float tankx, float tanky);
 
-    void sendTankAndBullets(const Tank& tank, const std::vector<Bullet*>& bullets);
+    // 서버로부터 상대방의 탱크 위치를 수신
+    void receiveTankPosition(float& tankx, float& tanky);
 
-    void receiveEnemyTankAndBullets(Tank& enemyTank, std::vector<Bullet*>& enemyBullets);
+    // 서버로부터 연결 상태를 수신
+    void receiveStatus(bool& status, bool& is1p);
 
 private:
-    boost::asio::ip::tcp::socket& socket_;
+    boost::asio::ip::tcp::socket socket_;
 };

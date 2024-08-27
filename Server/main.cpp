@@ -1,97 +1,70 @@
 #include <iostream>
-#include <vector>
 #include <boost/asio.hpp>
 
+using namespace std;
 using boost::asio::ip::tcp;
 
-void receiveData(tcp::socket& socket, int& tankCenter, int& bulletCount, std::vector<int>& bulletCenters)
+void receiveTankData(tcp::socket &socket, float &tankx, float &tanky)
 {
-    boost::asio::read(socket, boost::asio::buffer(&tankCenter, sizeof(int)));
-
-    boost::asio::read(socket, boost::asio::buffer(&bulletCount, sizeof(int)));
-
-    bulletCenters.resize(bulletCount);
-    boost::asio::read(socket, boost::asio::buffer(bulletCenters.data(), bulletCount * sizeof(int)));
+	boost::asio::read(socket, boost::asio::buffer(&tankx, sizeof(float)));
+	boost::asio::read(socket, boost::asio::buffer(&tanky, sizeof(float)));
 }
 
-void sendData(tcp::socket& socket, int tankCenter, int bulletCount, const std::vector<int>& bulletCenters)
+void sendTankData(tcp::socket& socket, float tankx, float tanky)
 {
-    boost::asio::write(socket, boost::asio::buffer(&tankCenter, sizeof(int)));
+	boost::asio::write(socket, boost::asio::buffer(&tankx, sizeof(float)));
+	boost::asio::write(socket, boost::asio::buffer(&tanky, sizeof(float)));
+}
 
-    boost::asio::write(socket, boost::asio::buffer(&bulletCount, sizeof(int)));
-
-    boost::asio::write(socket, boost::asio::buffer(bulletCenters.data(), bulletCount * sizeof(int)));
+void sendStatus(tcp::socket& socket, bool status, bool is1p)
+{
+	boost::asio::write(socket, boost::asio::buffer(&status, sizeof(bool)));
+	boost::asio::write(socket, boost::asio::buffer(&is1p, sizeof(bool)));
 }
 
 int main()
 {
-    try
-    {
-        boost::asio::io_context io_context;
+	try
+	{
+		boost::asio::io_context io_context;
+		tcp::acceptor acceptor(io_context, tcp::endpoint(tcp::v4(), 12345));
+		std::cout << "서버 실행중..." << std::endl;
 
-        tcp::acceptor acceptor(io_context, tcp::endpoint(tcp::v4(), 12345));
+		tcp::socket socket1(io_context);
+		acceptor.accept(socket1);
+		cout << "플레이어 1 연결됨" << endl;
 
-        std::cout << "Server is running, waiting for players..." << std::endl;
+		bool status = false;
+		bool is1p = true;
 
-        tcp::socket socket1(io_context);
-        tcp::socket socket2(io_context);
+		sendStatus(socket1, status, is1p);
 
-        acceptor.accept(socket1);
-        std::cout << "Player 1 connected." << std::endl;
+		tcp::socket socket2(io_context);
+		acceptor.accept(socket2);
+		cout << "플레이어 2 연결됨" << endl;
 
-        int player1 = 1;
-        boost::asio::write(socket1, boost::asio::buffer(&player1, sizeof(int)));
+		status = true;
 
-        acceptor.accept(socket2);
-        std::cout << "Player 2 connected." << std::endl;
+		sendStatus(socket1, status, is1p);
+		
+		is1p = false;
+		sendStatus(socket2, status, is1p);
 
-        int player2 = 2;
-        boost::asio::write(socket2, boost::asio::buffer(&player2, sizeof(int)));
+		float tankx = 0, tanky = 0;
 
-        int tankCenter1 = 0, tankCenter2 = 0;
-        int bulletCount1 = 0, bulletCount2 = 0;
-        std::vector<int> bulletCenters1, bulletCenters2;
+		while (1)
+		{
+			receiveTankData(socket1, tankx, tanky);
+			sendTankData(socket2, tankx, tanky);
 
-        bool player1_connected = true;
-        bool player2_connected = true;
+			receiveTankData(socket2, tankx, tanky);
+			sendTankData(socket1, tankx, tanky);
+		}
+	}
+	catch(exception& e)
+	{
+		cerr << "예외 발생: " << e.what() << endl;
+	}
 
-        while (player1_connected || player2_connected)
-        {
-            if (player1_connected)
-            {
-                try
-                {
-                    receiveData(socket1, tankCenter2, bulletCount2, bulletCenters2);
-                    sendData(socket2, tankCenter2, bulletCount2, bulletCenters2);
-                }
-                catch (std::exception& e)
-                {
-                    std::cerr << "Player 1 disconnected: " << e.what() << std::endl;
-                    player1_connected = false;
-                }
-            }
-
-            if (player2_connected)
-            {
-                try
-                {
-                    receiveData(socket2, tankCenter1, bulletCount1, bulletCenters1);
-                    sendData(socket1, tankCenter1, bulletCount1, bulletCenters1);
-                }
-                catch (std::exception& e)
-                {
-                    std::cerr << "Player 2 disconnected: " << e.what() << std::endl;
-                    player2_connected = false;
-                }
-            }
-        }
-
-        std::cout << "Both players disconnected. Server shutting down." << std::endl;
-    }
-    catch (std::exception& e)
-    {
-        std::cerr << "Exception: " << e.what() << std::endl;
-    }
-
-    return 0;
+	return 0;
 }
